@@ -1,0 +1,3 @@
+[submodule "rust-sdk"]
+	path = rust-sdk
+	url = https://github.com/modelcontextprotocol/rust-sdk.git
