@@ -6,7 +6,6 @@ RUN apt-get update && \
     apt-get install -y pkg-config libssl-dev && \
     rm -rf /var/lib/apt/lists/*
 
-COPY rust-sdk ./rust-sdk/
 COPY Cargo.toml Cargo.lock ./
 
 # Create a dummy project for dependency caching https://stackoverflow.com/a/58474618/2318775

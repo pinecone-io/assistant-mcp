@@ -1,9 +1,9 @@
 use crate::config::Config;
 use crate::pinecone::{PineconeClient, PineconeError};
-use mcp_core::content::Content;
-use mcp_core::handler::{PromptError, ResourceError, ToolError};
-use mcp_core::prompt::Prompt;
-use mcp_core::{protocol::ServerCapabilities, resource::Resource, tool::Tool};
+use mcp_spec::content::Content;
+use mcp_spec::handler::{PromptError, ResourceError, ToolError};
+use mcp_spec::prompt::Prompt;
+use mcp_spec::{protocol::ServerCapabilities, resource::Resource, tool::Tool};
 use mcp_server::router::CapabilitiesBuilder;
 use serde_json::Value;
 use std::future::Future;
