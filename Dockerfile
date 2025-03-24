@@ -6,7 +6,7 @@ RUN apt-get update && \
     apt-get install -y pkg-config libssl-dev && \
     rm -rf /var/lib/apt/lists/*
 
-COPY Cargo.toml Cargo.lock ./
+COPY Cargo.toml ./
 
 # Create a dummy project for dependency caching https://stackoverflow.com/a/58474618/2318775
 RUN mkdir -p src && \
