@@ -1,10 +1,10 @@
 use crate::config::Config;
 use crate::pinecone::{PineconeClient, PineconeError};
+use mcp_server::router::CapabilitiesBuilder;
 use mcp_spec::content::Content;
 use mcp_spec::handler::{PromptError, ResourceError, ToolError};
 use mcp_spec::prompt::Prompt;
 use mcp_spec::{protocol::ServerCapabilities, resource::Resource, tool::Tool};
-use mcp_server::router::CapabilitiesBuilder;
 use serde_json::Value;
 use std::future::Future;
 use std::pin::Pin;
@@ -52,21 +52,24 @@ impl PineconeAssistantRouter {
             client,
             tools: vec![Tool::new(
                 TOOL_ASSISTANT_CONTEXT.to_string(),
-                "Retrieve context snippets from a Pinecone assistant knowledge base".to_string(),
+                "Retrieves relevant document snippets from your Pinecone Assistant knowledge base. \
+                Returns an array of text snippets from the most relevant documents. \
+                You can use the 'top_k' parameter to control result count (default: 15). \
+                Recommended top_k: a few (5-8) for simple/narrow queries, 10-20 for complex/broad topics.".to_string(),
                 serde_json::json!({
                 "type": "object",
                 "properties": {
                     PARAM_ASSISTANT_NAME: {
                         "type": "string",
-                        "description": "Name of the Pinecone assistant"
+                        "description": "Name of an existing Pinecone assistant"
                     },
                     PARAM_QUERY: {
                         "type": "string",
-                        "description": "The query to use for generating context."
+                        "description": "The query to retrieve context for."
                     },
                     PARAM_TOP_K: {
                         "type": "integer",
-                        "description": "Number of context snippets to return. Default is 15."
+                        "description": "The number of context snippets to retrieve. Defaults to 15."
                         }
                     },
                     "required": [PARAM_ASSISTANT_NAME, PARAM_QUERY]
@@ -100,7 +103,11 @@ impl PineconeAssistantRouter {
             .await?;
 
         tracing::info!("Successfully received response from Pinecone API");
-        Ok(vec![Content::text(response.snippets.to_string())])
+        Ok(response
+            .snippets
+            .iter()
+            .map(|snippet| Content::text(snippet.to_string()))
+            .collect())
     }
 }
 
@@ -111,14 +118,9 @@ impl mcp_server::Router for PineconeAssistantRouter {
 
     fn instructions(&self) -> String {
         format!(
-            "This server provides tools to interact with Pinecone's Assistant API. \
-        The {TOOL_ASSISTANT_CONTEXT} tool allows you to retrieve relevant context snippets from given knowledge base assistants. \
-        Returned value structure: \
-        An array of relevant document snippets, each containing: \
-          - content: The text content of the snippet \
-          - score: A relevance score (float) \
-          - reference: Source information including document ID and location \
-        You can tune the number of returned snippets by setting the `top_k` parameter."
+            "This server connects to an existing Pinecone Assistant,\
+            a RAG system for retrieving relevant document snippets. \
+            Use the {TOOL_ASSISTANT_CONTEXT} tool to access contextual information from its knowledge base"
         )
     }
 

@@ -34,7 +34,7 @@ pub struct AssistantContext {
 
 #[derive(Debug, Deserialize)]
 pub struct AssistantContextResponse {
-    pub snippets: serde_json::Value,
+    pub snippets: Vec<serde_json::Value>,
     pub usage: serde_json::Value,
 }
 
@@ -108,7 +108,7 @@ mod tests {
             .mock("POST", "/assistant/chat/test-assistant/context")
             .with_status(200)
             .with_header("content-type", "application/json")
-            .with_body(r#"{"snippets": [{"text": "This is a test response"}], "usage": {"total_tokens": 100}}"#)
+            .with_body(r#"{"snippets": [{"text": "snippet 1"}, {"text": "snippet 2"}], "usage": {"total_tokens": 100}}"#)
             .create();
 
         let client = PineconeClient::new("test-api-key".to_string(), server.url());
@@ -119,7 +119,8 @@ mod tests {
 
         mock.assert();
         let response = result.unwrap();
-        assert_eq!(response.snippets[0]["text"], "This is a test response");
+        assert_eq!(response.snippets[0]["text"], "snippet 1");
+        assert_eq!(response.snippets[1]["text"], "snippet 2");
     }
 
     #[tokio::test]
