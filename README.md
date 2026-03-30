@@ -7,6 +7,10 @@ An MCP server implementation for retrieving information from Pinecone Assistant.
 - Retrieves information from Pinecone Assistant
 - Supports multiple results retrieval with a configurable number of results
 
+## Hosted deployment
+
+A hosted deployment is available on [Fronteir AI](https://fronteir.ai/mcp/pinecone-io-assistant-mcp).
+
 ## Prerequisites
 
 - Docker installed on your system
