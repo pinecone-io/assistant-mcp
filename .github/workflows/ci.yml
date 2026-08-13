@@ -43,3 +43,20 @@ jobs:
       # (fix clippy lints & small correctness), which unblocks a hard gate.
       - name: Clippy (non-blocking until #10)
         run: cargo clippy --all-targets || true
+
+  audit:
+    name: Dependency audit
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Rust toolchain (stable)
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Install cargo-audit
+        uses: taiki-e/install-action@v2
+        with:
+          tool: cargo-audit
+
+      - name: cargo audit
+        run: cargo audit
